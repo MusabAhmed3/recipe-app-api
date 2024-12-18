@@ -85,7 +85,7 @@ class PublicUserApiTests(TestCase):
 
         payload = {
             'email': 'test@example.com',
-            'password' : 'incorrectpass',
+            'password': 'incorrectpass',
         }
         res = self.client.post(TOKEN_URL, payload)
 
@@ -102,7 +102,7 @@ class PublicUserApiTests(TestCase):
 
         payload = {
             'email': 'test@example.com',
-            'password' : '',
+            'password': '',
         }
         res = self.client.post(TOKEN_URL, payload)
 
