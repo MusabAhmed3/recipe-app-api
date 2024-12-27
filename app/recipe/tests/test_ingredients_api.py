@@ -46,7 +46,9 @@ class PrivateIngredientApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        ingredients = Ingredient.objects.filter(user=self.user).order_by('-name')
+        ingredients = Ingredient.objects.filter(
+            user=self.user,
+        ).order_by('-name')
         serializer = IngredientSerializer(ingredients, many=True)
 
         self.assertEqual(res.data, serializer.data)
@@ -61,14 +63,19 @@ class PrivateIngredientApiTests(TestCase):
         Ingredient.objects.create(user=self.user, name='Salt')
         res = self.client.get(INGREDIENTS_URL)
 
-        ingredients = Ingredient.objects.filter(user=self.user).order_by('-name')
+        ingredients = Ingredient.objects.filter(
+            user=self.user
+        ).order_by('-name')
         serializer = IngredientSerializer(ingredients, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
 
     def test_update_ingredient(self):
-        ingredient_salt = Ingredient.objects.create(user=self.user, name='Salt')
+        ingredient_salt = Ingredient.objects.create(
+            user=self.user,
+            name='Salt',
+        )
         url = detail_url(ingredient_id=ingredient_salt.id)
 
         payload = {
@@ -82,12 +89,17 @@ class PrivateIngredientApiTests(TestCase):
         self.assertEqual(payload['name'], ingredient_salt.name)
 
     def test_delete_ingredient(self):
-        ingredient_pepper = Ingredient.objects.create(user=self.user, name='Pepper')
+        ingredient_pepper = Ingredient.objects.create(
+            user=self.user,
+            name='Pepper',
+        )
         url = detail_url(ingredient_id=ingredient_pepper.id)
 
         res = self.client.delete(url)
 
-        ingredients = Ingredient.objects.filter(user=self.user).order_by('-name')
+        ingredients = Ingredient.objects.filter(
+            user=self.user,
+        ).order_by('-name')
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(ingredients.exists())
