@@ -56,7 +56,6 @@ class PrivateImageUploadTests(TestCase):
         url = create_image_upload_url(recipe_id=self.recipe.id)
 
         payload = {'image': 'hithere'}
-
         res = self.client.post(url, payload, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

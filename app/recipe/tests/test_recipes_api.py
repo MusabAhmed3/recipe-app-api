@@ -397,3 +397,49 @@ class PrivateRecipeApiTests(TestCase):
         res = self.client.patch(url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.ingredients.count(), 0)
+
+    def test_filter_recipes_by_tags(self):
+        r1 = create_recipe(user=self.user, title='Chicken Kofte')
+        r2 = create_recipe(user=self.user, title='Biryani')
+        r3 = create_recipe(user=self.user, title='Aloo Matter')
+
+        t1 = Tag.objects.create(user=self.user, name='Spicy')
+        t2 = Tag.objects.create(user=self.user, name='Masala dar')
+
+        r1.tags.add(t1)
+        r2.tags.add(t2)
+
+        s1 = RecipeSerializer(r1)
+        s2 = RecipeSerializer(r2)
+        s3 = RecipeSerializer(r3)
+
+        params = {'tags': f'{t1.id},{t2.id}'}
+        res = self.client.get(RECIPES_URL, params)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
+    def test_filter_recipes_by_ingredients(self):
+        r1 = create_recipe(user=self.user, title='Chicken Kofte')
+        r2 = create_recipe(user=self.user, title='Biryani')
+        r3 = create_recipe(user=self.user, title='Aloo Matter')
+
+        i1 = Ingredient.objects.create(user=self.user, name='Chicken Masala')
+        i2 = Ingredient.objects.create(user=self.user, name='Biryani Masala')
+
+        r1.ingredients.add(i1)
+        r2.ingredients.add(i2)
+
+        s1 = RecipeSerializer(r1)
+        s2 = RecipeSerializer(r2)
+        s3 = RecipeSerializer(r3)
+
+        params = {'ingredients': f'{i1.id},{i2.id}'}
+        res = self.client.get(RECIPES_URL, params)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
